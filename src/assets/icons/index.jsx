@@ -7,7 +7,8 @@ import {
   FaUserCircle,
 } from "react-icons/fa";
 import { AiFillHome } from "react-icons/ai";
-import { GiHumanPyramid, GiHamburgerMenu } from "react-icons/gi";
+import { GiHumanPyramid, GiHamburgerMenu, GiFinishLine } from "react-icons/gi";
+import { BsPlusLg, BsFillBagXFill, BsFillBagCheckFill } from "react-icons/bs";
 
 function Icon({ icon, style, onClick }) {
   if (icon === "") return null;
@@ -20,6 +21,9 @@ function Icon({ icon, style, onClick }) {
   if (icon === "FaUserAlt") return <FaUserAlt style={style} />;
   if (icon === "GiHamburgerMenu") return <GiHamburgerMenu style={style} />;
   if (icon === "FaUserCircle") return <FaUserCircle style={style} />;
+  if (icon === "BsPlusLg") return <BsPlusLg style={style} />;
+  if (icon === "BsFillBagCheckFill") return <BsFillBagCheckFill style={style} />;
+  if (icon === "BsFillBagXFill") return <BsFillBagXFill style={style} />;
 }
 
 export default Icon;

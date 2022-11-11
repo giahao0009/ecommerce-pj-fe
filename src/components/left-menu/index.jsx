@@ -34,6 +34,7 @@ function ItemMenu({ label, icon, active, path }) {
 
 function LeftMenu({ logoutAction }) {
   const location = useLocation();
+
   const logout = () => {
     logoutAction();
   };
@@ -57,7 +58,7 @@ function LeftMenu({ logoutAction }) {
             key={index}
             icon={item.icon}
             path={item.path}
-            active={location.pathname === item.path ? true : false}
+            active={location.pathname.includes(item.path) ? true : false}
           />
         ))}
       </ItemMenuWrapper>

@@ -11,6 +11,7 @@ export const HeaderContainer = styled.div`
   background: ${Color.orangeColor};
   width: 100%;
   box-shadow: ${BoxShadow};
+  z-index: 1000;
 `;
 
 export const Title = styled.span`

@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import InputField from "../InputField";
 import Button from "../button";
 import { Color } from "../../assets/styles/variable";
+import { loginUser } from "../../redux/apiRequest";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { toastSuccess, toastError } from "../../redux/toastSlice";
 import {
   LoginFormContainer,
   Title,
@@ -10,13 +14,21 @@ import {
   FormControl,
 } from "./styled";
 
-function LoginForm({ login }) {
+function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    login(email, password);
+    try {
+      const user = { email: email, password: password };
+      loginUser(user, dispatch, navigate);
+      toastSuccess("Đăng nhập thành công");
+    } catch (err) {
+      toastError("Không thể đăng nhập");
+    }
   };
 
   return (

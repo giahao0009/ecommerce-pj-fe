@@ -1,10 +1,12 @@
 import React, { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../../redux/userSlice";
 import LeftMenu from "../../components/left-menu";
 import Header from "../../components/header";
-import useUserTokenExist from "../../hooks/useUserTokenExist";
+import axios from "axios";
+import jwt_decode from "jwt-decode";
+import { loginSuccess } from "../../redux/authSlice";
+import { logoutUser } from "../../redux/apiRequest";
 
 import {
   MainLayout,
@@ -15,16 +17,53 @@ import {
 } from "./styled";
 
 function DashboardLayout() {
+  const user = useSelector((state) => state.auth.login?.currentUser);
+  const accessToken = user?.accessToken;
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector((s) => s.user);
-
+  let axiosJWT = axios.create();
   useEffect(() => {
-    if (!user?.token) navigate("/login");
-  }, [user?.token]);
+    if (!user) {
+      navigate("/login");
+    }
+  });
+
+  const refreshToken = async () => {
+    try {
+      const res = await axios.post(
+        `${process.env.REACT_APP_API_ENDPOINT}/user/refresh`,
+        {
+          withCredentials: true,
+        }
+      );
+      return res.data;
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  axiosJWT.interceptors.request.use(
+    async (config) => {
+      let date = new Date();
+      const decodedToken = jwt_decode(user?.accessToken);
+      if (decodedToken.exp < date.getTime() / 1000) {
+        const data = await refreshToken();
+        const refreshUser = {
+          ...user,
+          accessToken: data.accessToken,
+        };
+        dispatch(loginSuccess(refreshUser));
+        config.headers["x-auth-token"] = data.accessToken;
+      }
+      return config;
+    },
+    (err) => {
+      return Promise.reject(err);
+    }
+  );
 
   const logoutAction = () => {
-    dispatch(logout());
+    logoutUser(dispatch, navigate, accessToken);
   };
 
   return (

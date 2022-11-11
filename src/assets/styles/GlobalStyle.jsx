@@ -31,6 +31,24 @@ export const GlobalStyle = createGlobalStyle`
     body {
         line-height: 1;
     }
+
+    body::-webkit-scrollbar-track
+    {
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+        background-color: #F5F5F5;
+    }
+
+    body::-webkit-scrollbar
+    {
+        width: 10px;
+        background-color: #F5F5F5;
+    }
+
+    body::-webkit-scrollbar-thumb
+    {
+        background-color: #000000;
+        border: 2px solid #555555;
+    }
     ol, ul {
         list-style: none;
     }
@@ -49,5 +67,8 @@ export const GlobalStyle = createGlobalStyle`
     a{
         text-decoration: none;
         color: #000;
+    }
+    .sr-only {
+        display: none;
     }
 `;

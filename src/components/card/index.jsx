@@ -2,9 +2,9 @@ import React from "react";
 import { CardContainer, CardTitle, CardContent } from "./styled";
 import Icon from "../../assets/icons";
 
-function Card({ icon, title, content, styleIcon, iconColor }) {
+function Card({ icon, title, content, styleIcon, iconColor, style }) {
   return (
-    <CardContainer>
+    <CardContainer style={style}>
       <Icon icon={icon} style={{ ...styleIcon, color: iconColor }} />
 
       <div>

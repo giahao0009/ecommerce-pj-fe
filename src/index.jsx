@@ -5,6 +5,9 @@ import store from "./redux/store";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistor } from "./redux/store";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "react-form-builder2/dist/app.css";
+import "suneditor/dist/css/suneditor.min.css";
+import "react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css";
 import App from "./App";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
