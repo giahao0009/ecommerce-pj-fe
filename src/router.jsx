@@ -10,6 +10,7 @@ import ProductsCategories from "./sections/products-categories";
 import ProductCategoriesCreate from "./sections/products-categories-create";
 import ProductCategoriesEdit from "./sections/products-categories-edit";
 import OrderSection from "./sections/order";
+import OrderDetail from "./sections/order-detail";
 import CustomersSection from "./sections/customers";
 import CustomersCreate from "./sections/customers-create";
 import CustomersEdit from "./sections/customers-edit";
@@ -39,6 +40,7 @@ const RouterDom = () => {
             element={<ProductCategoriesEdit />}
           />
           <Route path="orders" element={<OrderSection />} />
+          <Route path="order/:id" element={<OrderDetail />} />
           <Route path="customers" element={<CustomersSection />} />
           <Route path="customers/create" element={<CustomersCreate />} />
           <Route path="customers/:customerId" element={<CustomersEdit />} />

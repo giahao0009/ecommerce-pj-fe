@@ -4,27 +4,38 @@ import SunEditor from "suneditor-react";
 import productApi from "../../api/productApi";
 import { useParams } from "react-router-dom";
 import { Color } from "../../assets/styles/variable";
+import { useSelector, useDispatch } from "react-redux";
+import { toastSuccess, toastError } from "../../redux/toastSlice";
+import { confirmAlert } from "react-confirm-alert";
 import { Link } from "react-router-dom";
-
 
 function ProductsEdit() {
   const { productId } = useParams();
   const [formState, setFormState] = useState({});
-  const [images, setImages] = useState([
-    {
-      data_url:
-        process.env.REACT_APP_API_ENDPOINT + `/product/photo/${productId}`,
-    },
-  ]);
-  const maxNumber = 69;
+  const [categories, setCategories] = useState([]);
+  const [contents, setContents] = useState("");
+  const dispatch = useDispatch();
+  const token = useSelector(
+    (state) => state?.auth?.login?.currentUser?.accessToken
+  );
   const editor = useRef();
 
   useEffect(() => {
     const fetchData = async () => {
       const response = await productApi.getDetail(productId);
+      console.log(response);
       setFormState(response);
+      setContents(response.description);
     };
     fetchData();
+  }, []);
+
+  useEffect(() => {
+    const getCategories = async () => {
+      const res = await productApi.getCategories();
+      setCategories(res.data);
+    };
+    getCategories();
   }, []);
 
   const getSunEditorInstance = (sunEditor) => {
@@ -35,27 +46,47 @@ function ProductsEdit() {
     setFormState({ ...formState, description: content });
   };
 
-  const onChange = (imageList, addUpdateIndex) => {
-    // data for submit
-    console.log(imageList, addUpdateIndex);
-    setImages(imageList);
+  const handleOnChange = (e) => {
+    setFormState({ ...formState, [e.target.name]: e.target.value });
   };
 
-  const onClickImage = (e, onImageUpload) => {
+  const handleUpdateProduct = (e) => {
     e.preventDefault();
-    onImageUpload();
+    const update = async () => {
+      try {
+        const res = await productApi.updateProduct(productId, formState, token);
+        console.log(res);
+        dispatch(toastSuccess("Cập nhật thông tin sản phẩm thành công"));
+      } catch (err) {
+        console.log(err);
+        dispatch(toastError("Cập nhật sản phẩm không thành công"));
+      }
+    };
+    update();
   };
 
-  const onClickRemoveAll = (e, onImageRemoveAll) => {
-    e.preventDefault();
-    onImageRemoveAll();
+  const handleDeleteProduct = () => {
+    confirmAlert({
+      title: "Xác nhận",
+      message: "Are you sure to do this.",
+      buttons: [
+        {
+          label: "Yes",
+          onClick: () => {
+            
+          },
+        },
+        {
+          label: "No",
+          onClick: () => alert("Click No"),
+        },
+      ],
+    });
   };
-
-  console.log(images);
 
   return (
     <div className="container-fluid">
-      <form>
+      <form onSubmit={(e) => handleUpdateProduct(e)}>
         <div className="row">
           <div className="col-6">
             <div className="mb-3">
@@ -65,6 +96,7 @@ function ProductsEdit() {
                 name="name"
                 className="form-control"
                 value={formState.name}
+                onChange={(e) => handleOnChange(e)}
               />
             </div>
             <div className="mb-3">
@@ -72,105 +104,55 @@ function ProductsEdit() {
               <input
                 type="text"
                 className="form-control"
+                name="price"
                 value={formState.price}
+                onChange={(e) => handleOnChange(e)}
               />
             </div>
             <div className="mb-3">
-              <label className="form-label">Mã loại sản phẩm</label>
-              <input
-                type="text"
-                className="form-control"
+              <label className="form-label">Loại sản phẩm</label>
+              <select
+                className="form-select"
                 value={formState.category}
-              />
+                name="category"
+                onChange={(e) => handleOnChange(e)}
+              >
+                {categories.map((item, index) => {
+                  return <option value={item._id}>{item.name}</option>;
+                })}
+              </select>
             </div>
             <div className="mb-3">
               <label className="form-label">Số lượng</label>
               <input
                 type="text"
                 className="form-control"
+                name="quantity"
                 value={formState.quantity}
+                onChange={(e) => handleOnChange(e)}
               />
             </div>
             <div className="mb-3">
               <label className="form-label">Shipping</label>
-              <input
-                type="text"
-                className="form-control"
+              <select
+                className="form-select"
+                name="shipping"
                 value={formState.shipping}
-              />
+                onChange={(e) => handleOnChange(e)}
+              >
+                <option value={true}>True</option>
+                <option value={false}>False</option>
+              </select>
             </div>
           </div>
           <div className="col-6">
-            <ImageUploading
-              multiple
-              value={images}
-              onChange={onChange}
-              maxNumber={maxNumber}
-              dataURLKey="data_url"
-            >
-              {({
-                imageList,
-                onImageUpload,
-                onImageRemoveAll,
-                onImageUpdate,
-                onImageRemove,
-                isDragging,
-                dragProps,
-              }) => (
-                // write your building UI
-                <div className="upload__image-wrapper">
-                  <button
-                    style={
-                      isDragging
-                        ? { color: "red" }
-                        : {
-                            outline: "none",
-                            border: "none",
-                            background: `${Color.orangeColor}`,
-                            padding: "10px",
-                            color: `${Color.whiteColor}`,
-                            borderRadius: "10px",
-                          }
-                    }
-                    onClick={(e) => onClickImage(e, onImageUpload)}
-                    {...dragProps}
-                  >
-                    Lựa chọn hình ảnh sản phẩm
-                  </button>
-                  &nbsp;
-                  <button
-                    onClick={(e) => onClickRemoveAll(e, onImageRemoveAll)}
-                    style={{
-                      outline: "none",
-                      border: "none",
-                      background: `${Color.orangeColor}`,
-                      padding: "10px",
-                      color: `${Color.whiteColor}`,
-                      borderRadius: "10px",
-                    }}
-                  >
-                    Remove image
-                  </button>
-                  {imageList.map((image, index) => (
-                    <div
-                      key={index}
-                      className="image-item"
-                      style={{ marginTop: "10px" }}
-                    >
-                      <img
-                        style={{
-                          width: "100%",
-                          borderRadius: "10px",
-                          height: "350px",
-                        }}
-                        src={image["data_url"]}
-                        alt="Hình ảnh"
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </ImageUploading>
+            <p className="mb-2">Hình ảnh sản phẩm</p>
+            <div className="p-2 border border-warning border-3 rounded">
+              <img
+                className="img-fluid"
+                src={`${process.env.REACT_APP_API_ENDPOINT}/product/photo/${productId}`}
+              />
+            </div>
           </div>
         </div>
         <div className="row mt-2">
@@ -178,12 +160,14 @@ function ProductsEdit() {
             <div className="col-12">
               <p className="mb-2"> Mô tả sản phẩm </p>
               <SunEditor
+                autoFocus={false}
                 getSunEditorInstance={getSunEditorInstance}
                 lang="en"
                 width="100%"
                 height="100%"
                 placeholder="Hãy điền mô tả sản phẩm nhé"
                 onChange={handleChangeDes}
+                setContents={contents}
               />
             </div>
           </div>
@@ -191,7 +175,13 @@ function ProductsEdit() {
         <div className="row mt-3">
           <div className="col-6">
             <button type="submit" className="btn btn-primary">
-              Tạo sản phẩm
+              Chỉnh sửa sản phẩm
+            </button>
+            <button
+              onClick={handleDeleteProduct}
+              className="btn btn-danger ms-2"
+            >
+              Xoá sản phẩm
             </button>
             <Link to={"/admin/products"}>
               <button className="btn btn-warning ms-2">Huỷ tạo</button>

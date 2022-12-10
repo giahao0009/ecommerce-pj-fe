@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import ImageUploading from "react-images-uploading";
 import { Color } from "../../assets/styles/variable";
 import { Link } from "react-router-dom";
@@ -17,9 +17,10 @@ function ProductsCreate() {
   const [price, setPrice] = useState(0);
   const [category, setCategory] = useState("");
   const [quantity, setQuantity] = useState(0);
-  const [shipping, setShipping] = useState(null);
+  const [shipping, setShipping] = useState(true);
   const [description, setDescription] = useState("");
   const [photo, setPhoto] = useState(null);
+  const [categories, setCategories] = useState([]);
 
   const getSunEditorInstance = (sunEditor) => {
     editor.current = sunEditor;
@@ -59,6 +60,14 @@ function ProductsCreate() {
     postData();
   };
 
+  useEffect(() => {
+    const getCategories = async () => {
+      const res = await productApi.getCategories();
+      setCategories(res.data);
+    };
+    getCategories();
+  }, []);
+
   return (
     <div className="container-fluid">
       <form onSubmit={(e) => onSubmitForm(e)}>
@@ -85,14 +94,22 @@ function ProductsCreate() {
               />
             </div>
             <div className="mb-3">
-              <label className="form-label">Mã loại sản phẩm</label>
-              <input
-                type="text"
-                className="form-control"
-                name="category"
+              <label className="form-label">Loại sản phẩm</label>
+              <select
+                className="form-select"
                 value={category}
+                name="category"
                 onChange={(e) => setCategory(e.target.value)}
-              />
+              >
+                <option selected>Loại sản phẩm</option>
+                {categories.map((item, index) => {
+                  return (
+                    <option key={index} value={item._id}>
+                      {item.name}
+                    </option>
+                  );
+                })}
+              </select>
             </div>
             <div className="mb-3">
               <label className="form-label">Số lượng</label>
@@ -106,13 +123,17 @@ function ProductsCreate() {
             </div>
             <div className="mb-3">
               <label className="form-label">Shipping</label>
-              <input
-                type="boolean"
-                className="form-control"
+              <select
+                className="form-select"
                 name="shipping"
                 value={shipping}
                 onChange={(e) => setShipping(e.target.value)}
-              />
+              >
+                <option value={true} selected>
+                  True
+                </option>
+                <option value={false}>False</option>
+              </select>
             </div>
           </div>
           <div className="col-6">

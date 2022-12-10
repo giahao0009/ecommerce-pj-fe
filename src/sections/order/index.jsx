@@ -1,66 +1,53 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Table from "../../components/table";
 import { Color } from "../../assets/styles/variable";
+import { useSelector, useDispatch } from "react-redux";
 import filterFactory, {
   textFilter,
   selectFilter,
 } from "react-bootstrap-table2-filter";
+import { getAllOrderByAdmin } from "../../redux/apiRequest";
 import Icon from "../../assets/icons";
 import Card from "../../components/card";
+import { useNavigate } from "react-router-dom";
+import moment from "moment";
 
 function OrderSection() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const token = useSelector(
+    (state) => state?.auth?.login?.currentUser?.accessToken
+  );
+  const orderList = useSelector((state) => state?.order?.orders);
   const styleIcon = {
     marginRight: "20px",
     fontSize: "30px",
   };
-  const orders = [
-    {
-      orderCode: "SON00016",
-      dateCreate: "15/10/2022 14:47",
-      customerName: "Khách lẻ",
-      status: 0,
-      amount: "277,000",
-    },
-    {
-      orderCode: "SON00016",
-      dateCreate: "15/10/2022 14:47",
-      customerName: "Khách lẻ",
-      status: 1,
-      amount: "277,000",
-    },
-    {
-      orderCode: "SON00016",
-      dateCreate: "15/10/2022 14:47",
-      customerName: "Khách lẻ",
-      status: 1,
-      amount: "277,000",
-    },
-    {
-      orderCode: "SON00016",
-      dateCreate: "15/10/2022 14:47",
-      customerName: "Khách lẻ",
-      status: 0,
-      amount: "277,000",
-    },
-    {
-      orderCode: "SON00016",
-      dateCreate: "15/10/2022 14:47",
-      customerName: "Khách lẻ",
-      status: 0,
-      amount: "277,000",
-    },
-    {
-      orderCode: "SON00016",
-      dateCreate: "15/10/2022 14:47",
-      customerName: "Khách lẻ",
-      status: 0,
-      amount: "277,000",
-    },
-  ];
+  const orders = orderList.map((item) => {
+    return {
+      orderCode: item._id,
+      dateCreate: moment(item.crearedAt).format("DD/MM/YYYY"),
+      customerName: item.cusName,
+      status: item.status,
+      amount: item.amount,
+      detailButton: (
+        <button
+          className="btn btn-warning me-1"
+          onClick={() => {
+            navigate(`/admin/order/${item._id}`);
+          }}
+        >
+          Chi tiết
+        </button>
+      ),
+    };
+  });
 
   const selectOptions = {
-    0: "Hoàn thành",
-    1: "Chưa hoàn thành",
+    0: "Đã huỷ",
+    1: "Chưa xác nhận",
+    2: "Đã xác nhận",
+    3: "Hoàn thành",
   };
 
   const columns = [
@@ -108,7 +95,20 @@ function OrderSection() {
       formatter: (cell) => selectOptions[cell],
       filter: selectFilter({ options: selectOptions }),
     },
+    {
+      dataField: "detailButton",
+      text: "Chi tiết",
+      headerAlign: "center",
+      headerStyle: {
+        backgroundColor: Color.orangeColor,
+        color: Color.whiteColor,
+      },
+    },
   ];
+
+  useEffect(() => {
+    getAllOrderByAdmin(dispatch, token);
+  }, []);
 
   return (
     <div className="container-fluid">

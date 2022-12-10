@@ -20,6 +20,15 @@ class ProductApi {
       headers: { "x-auth-token": token, "Content-Type": "multipart/form-data" },
     });
   };
+  updateProduct = (id, payload, token) => {
+    const url = `${process.env.REACT_APP_API_ENDPOINT}/product/${id}`;
+    return axios.patch(url, payload, {
+      headers: { "x-auth-token": token, "Content-Type": "application/json" },
+    });
+  };
+  deleteProduct = () => {
+    const url = `${process.env.REACT_APP_API_ENDPOINT}/product`;
+  };
   getCategories = () => {
     const url = `${process.env.REACT_APP_API_ENDPOINT}/product/categories`;
     return axios.get(url);

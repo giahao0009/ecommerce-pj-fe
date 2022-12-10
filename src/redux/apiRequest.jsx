@@ -8,6 +8,7 @@ import {
   logoutFailed,
 } from "./authSlice";
 import { toastSuccess, toastError } from "./toastSlice";
+import { getOrders } from "./orderSlice";
 
 export const loginUser = async (user, dispatch, navigate) => {
   dispatch(loginStart());
@@ -31,10 +32,22 @@ export const logoutUser = async (dispatch, navigate, accessToken) => {
     const res = await axios.post(
       `${process.env.REACT_APP_API_ENDPOINT}/user/logout`
     );
-    console.log(res);
     dispatch(logoutSuccess());
     navigate("/login");
   } catch (error) {
     dispatch(logoutFailed());
+  }
+};
+
+export const getAllOrderByAdmin = async (dispatch, accessToken) => {
+  try {
+    const url = `${process.env.REACT_APP_API_ENDPOINT}/order/all`;
+    const res = await axios.get(url, {
+      headers: { "x-auth-token": accessToken },
+    });
+    dispatch(getOrders(res.data));
+  } catch (err) {
+    console.log(err);
+    dispatch(toastError("Không thể lấy dữ liệu đơn hàng"));
   }
 };

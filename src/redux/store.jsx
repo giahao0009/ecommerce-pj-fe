@@ -15,12 +15,14 @@ import counterReducer from "../redux/counterSlice";
 import authReducer from "./authSlice";
 import menuReducer from "./menuSlice";
 import toastReducer from "./toastSlice";
+import orderSlice from "./orderSlice";
 
 const rootReducer = combineReducers({
   counter: counterReducer,
   auth: authReducer,
   menu: menuReducer,
   toast: toastReducer,
+  order: orderSlice,
 });
 
 const persistConfig = {
