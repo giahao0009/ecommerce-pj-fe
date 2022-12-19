@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 
 function ProductCategoriesCreate(edit) {
   const [name, setName] = useState("");
+  const [rerender, setRerender] = useState(false);
   const user = useSelector((state) => state.auth.login?.currentUser);
 
   const onSubmit = (e) => {
@@ -15,6 +16,7 @@ function ProductCategoriesCreate(edit) {
         };
         const res = await productApi.postCategory(category, user.accessToken);
         console.log(res);
+        window.location.reload();
       } catch (err) {
         console.log(err);
       }

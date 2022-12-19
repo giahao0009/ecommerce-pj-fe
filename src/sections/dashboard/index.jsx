@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import TurnoverChart from "../../components/turnoverChart";
 import Card from "../../components/card";
+import axios from "axios";
 import { Color } from "../../assets/styles/variable";
 import {
   DashboardContainer,
@@ -14,6 +15,16 @@ const styleIcon = {
 };
 
 function Dashboard() {
+  const [amount, setAmount] = useState(0);
+  useEffect(() => {
+    const featchData = async () => {
+      const res = await axios.get(
+        `${process.env.REACT_APP_API_ENDPOINT}/order/totalIncome`
+      );
+      setAmount(res.data);
+    };
+    featchData();
+  }, []);
   return (
     <DashboardContainer>
       <TitleDashboard>Dashboard</TitleDashboard>
@@ -21,15 +32,11 @@ function Dashboard() {
         <Card
           icon="FaWallet"
           title="Doanh Thu"
-          content="1,000,000 VND"
+          content={amount?.toLocaleString("it-IT", {
+            style: "currency",
+            currency: "VND",
+          })}
           iconColor="red"
-          styleIcon={styleIcon}
-        />
-        <Card
-          icon="FaFileInvoiceDollar"
-          title="Đơn Hàng"
-          content="1,000,000 VND"
-          iconColor="green"
           styleIcon={styleIcon}
         />
       </CardDashboardContainer>

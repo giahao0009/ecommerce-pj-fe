@@ -6,9 +6,11 @@ import {
   logoutStart,
   logoutSuccess,
   logoutFailed,
+  getInfo,
 } from "./authSlice";
 import { toastSuccess, toastError } from "./toastSlice";
-import { getOrders } from "./orderSlice";
+import { clearOrders, getOrders } from "./orderSlice";
+import jwt_decode from "jwt-decode";
 
 export const loginUser = async (user, dispatch, navigate) => {
   dispatch(loginStart());
@@ -17,7 +19,9 @@ export const loginUser = async (user, dispatch, navigate) => {
       `${process.env.REACT_APP_API_ENDPOINT}/user/login`,
       user
     );
+    const decode = jwt_decode(res.data.accessToken);
     dispatch(loginSuccess(res.data));
+    dispatch(getInfo(decode));
     dispatch(toastSuccess("Đăng nhập thành công"));
     navigate("/admin/dashboard");
   } catch (error) {
@@ -32,8 +36,9 @@ export const logoutUser = async (dispatch, navigate, accessToken) => {
     const res = await axios.post(
       `${process.env.REACT_APP_API_ENDPOINT}/user/logout`
     );
+
     dispatch(logoutSuccess());
-    navigate("/login");
+    navigate("/");
   } catch (error) {
     dispatch(logoutFailed());
   }
@@ -49,5 +54,6 @@ export const getAllOrderByAdmin = async (dispatch, accessToken) => {
   } catch (err) {
     console.log(err);
     dispatch(toastError("Không thể lấy dữ liệu đơn hàng"));
+    dispatch(clearOrders());
   }
 };

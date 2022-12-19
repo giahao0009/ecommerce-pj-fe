@@ -26,8 +26,11 @@ class ProductApi {
       headers: { "x-auth-token": token, "Content-Type": "application/json" },
     });
   };
-  deleteProduct = () => {
-    const url = `${process.env.REACT_APP_API_ENDPOINT}/product`;
+  deleteProduct = (id, token) => {
+    const url = `${process.env.REACT_APP_API_ENDPOINT}/product/${id}`;
+    return axios.delete(url, {
+      headers: { "x-auth-token": token, "Content-Type": "application/json" },
+    });
   };
   getCategories = () => {
     const url = `${process.env.REACT_APP_API_ENDPOINT}/product/categories`;
@@ -46,6 +49,10 @@ class ProductApi {
     return axios.post(url, payload, {
       headers: { "x-auth-token": token },
     });
+  };
+  deleteCategory = (id, token) => {
+    const url = `${process.env.REACT_APP_API_ENDPOINT}/category/${id}`;
+    return axios.delete(url, { headers: { "x-auth-token": token } });
   };
 }
 

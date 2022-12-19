@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -10,6 +10,7 @@ import {
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 import { TurnoverChartContainer, TurnoverChartTitle } from "./styled";
+import axios from "axios";
 
 ChartJS.register(
   CategoryScale,
@@ -29,28 +30,48 @@ export const options = {
   },
 };
 
-const labels = ["January", "February", "March", "April", "May", "June", "July"];
-
-export const data = {
-  labels,
-  datasets: [
-    {
-      label: "Dataset 1",
-      data: 10000,
-      backgroundColor: "rgba(255, 99, 132, 0.5)",
-    },
-    {
-      label: "Dataset 2",
-      data: 1000,
-      backgroundColor: "rgba(53, 162, 235, 0.5)",
-    },
-  ],
-};
+const labels = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
 
 function TurnoverChart() {
+  const [featchData, setFetchData] = useState([]);
+  const data = {
+    labels,
+    datasets: [
+      {
+        label: "Số hoá đơn",
+        data: labels.map((item, index) => {
+          return featchData[index + 1]?.array?.length;
+        }),
+        backgroundColor: "rgba(255, 99, 132, 0.5)",
+      },
+    ],
+  };
+  useEffect(() => {
+    const featchdata = async () => {
+      const res = await axios.get(
+        `${process.env.REACT_APP_API_ENDPOINT}/order/chartIncome`
+      );
+      console.log(res.data);
+      setFetchData(res.data);
+    };
+    featchdata();
+  }, []);
   return (
     <TurnoverChartContainer>
-      <TurnoverChartTitle>Doanh thu</TurnoverChartTitle>
+      <TurnoverChartTitle>Số đơn hàng</TurnoverChartTitle>
       <Bar options={options} data={data} />
     </TurnoverChartContainer>
   );

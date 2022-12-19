@@ -3,6 +3,8 @@ import { useLocation, Link } from "react-router-dom";
 import { BiLogOut } from "react-icons/bi";
 import menuList from "../../constant/menuList";
 import LinkButton from "../LinkButton";
+import { useSelector } from "react-redux";
+import { FaUserAlt } from "react-icons/fa";
 import {
   LeftMenuContainer,
   UserControl,
@@ -17,6 +19,11 @@ import {
   ItemTitle,
   InfoUserWrapper,
 } from "./styled";
+
+const iconStyle = {
+  fontSize: "20px",
+  margin: "0 10px 0 0",
+};
 
 function ItemMenu({ label, icon, active, path }) {
   return (
@@ -34,7 +41,7 @@ function ItemMenu({ label, icon, active, path }) {
 
 function LeftMenu({ logoutAction }) {
   const location = useLocation();
-
+  const user = useSelector((state) => state.auth.login?.userInfo?.user);
   const logout = () => {
     logoutAction();
   };
@@ -52,15 +59,26 @@ function LeftMenu({ logoutAction }) {
         </UserControl>
       </InfoUserWrapper>
       <ItemMenuWrapper>
-        {menuList.map((item, index) => (
+        {menuList.map((item, index) => {
+          return (
+            <ItemMenu
+              label={item.label}
+              key={index}
+              icon={item.icon}
+              path={item.path}
+              active={location.pathname.includes(item.path) ? true : false}
+            />
+          );
+        })}
+        {user.role == 1 && (
           <ItemMenu
-            label={item.label}
-            key={index}
-            icon={item.icon}
-            path={item.path}
-            active={location.pathname.includes(item.path) ? true : false}
+            label="Người dùng"
+            key="option-5"
+            icon={<FaUserAlt style={iconStyle} />}
+            path="/admin/users"
+            active={location.pathname.includes("/admin/users") ? true : false}
           />
-        ))}
+        )}
       </ItemMenuWrapper>
     </LeftMenuContainer>
   );

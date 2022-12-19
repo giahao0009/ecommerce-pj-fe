@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Table from "../../components/table";
 import { Color } from "../../assets/styles/variable";
 import { useSelector, useDispatch } from "react-redux";
@@ -10,9 +10,14 @@ import { getAllOrderByAdmin } from "../../redux/apiRequest";
 import Icon from "../../assets/icons";
 import Card from "../../components/card";
 import { useNavigate } from "react-router-dom";
+import orderApi from "../../api/orderApi";
 import moment from "moment";
 
 function OrderSection() {
+  const [countUnconfirm, setCountUnconfirm] = useState(0);
+  const [countConfirm, setCountConfirm] = useState(0);
+  const [countSuccess, setCountSuccess] = useState(0);
+  const [countFail, setCountFail] = useState(0);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const token = useSelector(
@@ -25,7 +30,7 @@ function OrderSection() {
   };
   const orders = orderList.map((item) => {
     return {
-      orderCode: item._id,
+      orderCode: "HD" + item._id,
       dateCreate: moment(item.crearedAt).format("DD/MM/YYYY"),
       customerName: item.cusName,
       status: item.status,
@@ -110,29 +115,72 @@ function OrderSection() {
     getAllOrderByAdmin(dispatch, token);
   }, []);
 
+  useEffect(() => {
+    const countUnconfirmOrder = async () => {
+      const res = await orderApi.getCountUnconfirmOrder(token);
+      setCountUnconfirm(res.data.count);
+    };
+    countUnconfirmOrder();
+  }, []);
+
+  useEffect(() => {
+    const countConfirmOrder = async () => {
+      const res = await orderApi.getCountConfirmOrder(token);
+      setCountConfirm(res.data.count);
+    };
+    countConfirmOrder();
+  }, []);
+
+  useEffect(() => {
+    const countSuccessOrder = async () => {
+      const res = await orderApi.getCountSuccess(token);
+      setCountSuccess(res.data.count);
+    };
+    countSuccessOrder();
+  }, []);
+
+  useEffect(() => {
+    const countFailOrder = async () => {
+      const res = await orderApi.getCountSuc(token);
+      setCountFail(res.data.count);
+    };
+    countFailOrder();
+  }, []);
+
   return (
     <div className="container-fluid">
       <div className="row mb-2">
-        <div className="col-10 d-flex justify-content-start">
+        <div className="col-3">
           <Card
             icon="BsFillBagCheckFill"
-            title="Đơn hoàn thành"
-            content="100"
-            styleIcon={styleIcon}
-            style={{ marginRight: "10px" }}
-          />
-          <Card
-            icon="BsFillBagXFill"
-            title="Đơn chưa hoàn thành"
-            content="100"
+            title="Chưa xác nhận"
+            content={countUnconfirm}
             styleIcon={styleIcon}
           />
         </div>
-        <div className="col-2 d-flex justify-content-end align-items-center">
-          <button className="btn btn-primary d-flex justify-content-end align-items-center">
-            <Icon icon="BsPlusLg" style={{ marginRight: "10px" }} />
-            Tạo đơn hàng
-          </button>
+        <div className="col-3">
+          <Card
+            icon="BsFillBagXFill"
+            title="Đã xác nhận"
+            content={countConfirm}
+            styleIcon={styleIcon}
+          />
+        </div>
+        <div className="col-3">
+          <Card
+            icon="BsFillBagXFill"
+            title="Hoàn thành"
+            content={countSuccess}
+            styleIcon={styleIcon}
+          />
+        </div>
+        <div className="col-3">
+          <Card
+            icon="BsFillBagXFill"
+            title="Bị huỷ"
+            content={countFail}
+            styleIcon={styleIcon}
+          />
         </div>
       </div>
       <div>

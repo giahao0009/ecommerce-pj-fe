@@ -32,12 +32,6 @@ const menuList = [
     path: "/admin/customers",
     icon: <GiHumanPyramid style={iconStyle} />,
   },
-  {
-    value: "option-5",
-    label: "Người dùng",
-    path: "/admin/users",
-    icon: <FaUserAlt style={iconStyle} />,
-  },
 ];
 
 export default menuList;

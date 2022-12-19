@@ -16,12 +16,12 @@ function Products() {
   const dispatch = useDispatch();
   const featchDataProducts = async () => {
     try {
-      const params = { order: "asc", limit: 10, sortBy: "name" };
+      const params = { order: "asc", limit: 10 };
       const response = await productApi.getAll(params);
-      let convertList = response.map((item) => {
+      let convertList = response?.map((item) => {
         return {
           ...item,
-          category: item.category.name,
+          category: item?.category?.name,
           createdAt: moment(item.createdAt).format("DD/MM/YYYY"),
           editButton: (
             <button
@@ -57,7 +57,6 @@ function Products() {
         color: Color.whiteColor,
       },
     },
-
     {
       dataField: "name",
       text: "Sản phẩm",
@@ -71,23 +70,14 @@ function Products() {
     },
     {
       dataField: "category",
-      text: "Mã loại",
+      text: "Loại sản phẩm",
       sort: true,
       headerAlign: "center",
       headerStyle: {
         backgroundColor: Color.orangeColor,
         color: Color.whiteColor,
       },
-    },
-    {
-      dataField: "brand",
-      text: "Nhãn hiệu",
-      sort: true,
-      headerAlign: "center",
-      headerStyle: {
-        backgroundColor: Color.orangeColor,
-        color: Color.whiteColor,
-      },
+      filter: textFilter({}),
     },
     {
       dataField: "quantity",

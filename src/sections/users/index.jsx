@@ -150,7 +150,14 @@ function UsersSection() {
   ];
   return (
     <div className="container-fluid">
-      <button className="btn btn-primary mb-3">Thêm tài khoản</button>
+      <button
+        className="btn btn-primary mb-3"
+        onClick={() => {
+          navigate("create");
+        }}
+      >
+        Thêm tài khoản
+      </button>
       <Table data={data} labels={columns} />
     </div>
   );

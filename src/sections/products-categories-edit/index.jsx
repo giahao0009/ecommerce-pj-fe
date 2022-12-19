@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import productApi from "../../api/productApi";
 import moment from "moment";
+import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { toastSuccess, toastError } from "../../redux/toastSlice";
 
 function ProductCategoriesEdit() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { categoryId } = useParams();
   const [data, setData] = useState("");
   const user = useSelector((state) => state.auth.login?.currentUser);
@@ -19,8 +21,7 @@ function ProductCategoriesEdit() {
     featchData();
   }, []);
 
-  const onSubmit = (e) => {
-    e.preventDefault();
+  const handleUpdate = () => {
     try {
       const putData = async () => {
         const res = await productApi.putDetailCategory(
@@ -36,8 +37,27 @@ function ProductCategoriesEdit() {
     }
   };
 
+  const handleDelete = () => {
+    let confirmOk = window.confirm("Bạn có muốn xoá");
+    if (confirmOk) {
+      try {
+        const deleteC = async () => {
+          const res = await productApi.deleteCategory(
+            categoryId,
+            user.accessToken
+          );
+          console.log(res);
+          navigate("/admin/products/category");
+        };
+        deleteC();
+      } catch (err) {
+        dispatch(toastError("Không thể xoá loại sản phẩm"));
+      }
+    }
+  };
+
   return (
-    <form onSubmit={onSubmit}>
+    <div>
       <div className="container-fluid">
         <div className="row">
           <div className="col-6">
@@ -83,19 +103,17 @@ function ProductCategoriesEdit() {
                 disabled
               />
             </div>
-            <button type="submit" className="btn btn-primary">
+            <button onClick={handleUpdate} className="btn btn-primary">
               Sửa chữa
             </button>
-            <button type="submit" className="btn btn-danger ms-2">
+            <button onClick={handleDelete} className="btn btn-danger ms-2">
               Xoá
             </button>
-            <button type="submit" className="btn btn-warning ms-2">
-              Huỷ tạo
-            </button>
+            <button className="btn btn-warning ms-2">Huỷ tạo</button>
           </div>
         </div>
       </div>
-    </form>
+    </div>
   );
 }
 

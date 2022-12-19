@@ -16,14 +16,14 @@ import CustomersCreate from "./sections/customers-create";
 import CustomersEdit from "./sections/customers-edit";
 import ProductsEdit from "./sections/products-edit";
 import UsersSection from "./sections/users";
+import UsersEdit from "./sections/users-edit";
+import UsersCreate from "./sections/users-create";
 
 const RouterDom = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" index element={<Homepage />} />
-
-        <Route path="/login" element={<LoginPage />} />
+        <Route path="/" index element={<LoginPage />} />
 
         <Route path="/admin" element={<DashboardPage />}>
           <Route path="dashboard" element={<Dashboard />} />
@@ -45,6 +45,8 @@ const RouterDom = () => {
           <Route path="customers/create" element={<CustomersCreate />} />
           <Route path="customers/:customerId" element={<CustomersEdit />} />
           <Route path="users" element={<UsersSection />} />
+          <Route path="users/create" element={<UsersCreate />} />
+          <Route path="users/:accountId" element={<UsersEdit />} />
         </Route>
       </Routes>
     </BrowserRouter>

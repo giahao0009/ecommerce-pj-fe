@@ -6,6 +6,7 @@ import { useParams } from "react-router-dom";
 import { Color } from "../../assets/styles/variable";
 import { useSelector, useDispatch } from "react-redux";
 import { toastSuccess, toastError } from "../../redux/toastSlice";
+import { useNavigate } from "react-router-dom";
 import { confirmAlert } from "react-confirm-alert";
 import { Link } from "react-router-dom";
 
@@ -14,6 +15,7 @@ function ProductsEdit() {
   const [formState, setFormState] = useState({});
   const [categories, setCategories] = useState([]);
   const [contents, setContents] = useState("");
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const token = useSelector(
     (state) => state?.auth?.login?.currentUser?.accessToken
@@ -50,8 +52,7 @@ function ProductsEdit() {
     setFormState({ ...formState, [e.target.name]: e.target.value });
   };
 
-  const handleUpdateProduct = (e) => {
-    e.preventDefault();
+  const handleUpdateProduct = () => {
     const update = async () => {
       try {
         const res = await productApi.updateProduct(productId, formState, token);
@@ -65,20 +66,48 @@ function ProductsEdit() {
     update();
   };
 
+  const deleteProduct = () => {
+    const deleteP = async () => {
+      const res = await productApi.deleteProduct(productId, token);
+      if (res.status === 200) {
+        dispatch(toastSuccess("Xoá sản phẩm thành công"));
+      } else {
+        dispatch(toastError("Xoá sản phẩm thất bại"));
+      }
+      // try {
+      //   await productApi.deleteProduct(productId, token);
+      //   await dispatch(toastSuccess("Xoá sản phẩm thành công"));
+      // } catch (err) {
+      //   dispatch(
+      //     toastError(
+      //       "Xoá sản phẩm không thành công, do sản phẩm đang nằm trong giỏ hàng hoặc hoá đơn nào đó"
+      //     )
+      //   );
+      // }
+    };
+    deleteP();
+  };
+
   const handleDeleteProduct = () => {
     confirmAlert({
-      title: "Xác nhận",
-      message: "Are you sure to do this.",
+      title: "Xác nhận xoá sản phẩm",
+      message: "Bạn có thực sự muốn thực hiện hành động xoá này",
       buttons: [
         {
           label: "Yes",
-          onClick: () => {
-            
+          onClick: async () => {
+            const res = await productApi.deleteProduct(productId, token);
+            if (res.status === 200) {
+              dispatch(toastSuccess("Xoá sản phẩm thành công"));
+            } else {
+              dispatch(toastError("Xoá sản phẩm thất bại"));
+            }
+            dispatch(toastSuccess("Xoá sản phẩm thành công"));
+            navigate("/admin/products");
           },
         },
         {
           label: "No",
-          onClick: () => alert("Click No"),
         },
       ],
     });
@@ -86,7 +115,7 @@ function ProductsEdit() {
 
   return (
     <div className="container-fluid">
-      <form onSubmit={(e) => handleUpdateProduct(e)}>
+      <div>
         <div className="row">
           <div className="col-6">
             <div className="mb-3">
@@ -174,7 +203,7 @@ function ProductsEdit() {
         </div>
         <div className="row mt-3">
           <div className="col-6">
-            <button type="submit" className="btn btn-primary">
+            <button onClick={handleUpdateProduct} className="btn btn-primary">
               Chỉnh sửa sản phẩm
             </button>
             <button
@@ -188,7 +217,7 @@ function ProductsEdit() {
             </Link>
           </div>
         </div>
-      </form>
+      </div>
     </div>
   );
 }

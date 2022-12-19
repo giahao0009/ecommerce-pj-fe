@@ -5,6 +5,7 @@ const initialState = {
     currentUser: null,
     isFetching: false,
     error: false,
+    userInfo: null,
   },
 };
 
@@ -38,6 +39,9 @@ export const authSlice = createSlice({
       state.login.isFetching = false;
       state.login.error = true;
     },
+    getInfo: (state, action) => {
+      state.login.userInfo = action.payload;
+    },
   },
 });
 
@@ -48,6 +52,7 @@ export const {
   logoutStart,
   logoutSuccess,
   logoutFailed,
+  getInfo,
 } = authSlice.actions;
 
 export default authSlice.reducer;

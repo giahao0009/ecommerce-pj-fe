@@ -18,6 +18,7 @@ import {
 
 function DashboardLayout() {
   const user = useSelector((state) => state.auth.login?.currentUser);
+  const role = useSelector((state) => state.auth.login?.userInfo?.user?.role);
   const accessToken = user?.accessToken;
 
   const dispatch = useDispatch();
@@ -25,7 +26,15 @@ function DashboardLayout() {
   let axiosJWT = axios.create();
   useEffect(() => {
     if (!user) {
-      navigate("/login");
+      navigate("/");
+    }
+  });
+
+  useEffect(() => {
+    if (role == 1 || role == 2) {
+      return;
+    } else {
+      navigate("/");
     }
   });
 
